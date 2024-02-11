@@ -1,0 +1,115 @@
+{block content}
+{varType App\Entities\Brand[] $brands}
+{varType App\Services\TablePaginator\TablePaginator $tablePaginator}
+<div class="row">
+    <div class="col s12 m12">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Brand list</span>
+                <a class="waves-effect waves-light btn modal-trigger" href="#addBrand">
+                    <i class="material-icons left">add</i>PŘIDAT ZNAČKU
+                </a>
+
+                <div id="addBrand" class="modal">
+                    <form n:name=newBrandForm class=form>
+                        <div class="modal-content">
+                            <div class="input-field col s6">
+                                <input n:name=name placeholder="Název firmy" type="text" class="validate">
+                                <label n:name="name">Název firmy</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Zavřít</a>
+                            <input n:name=send class="waves-effect waves-green btn-flat">
+                        </div>
+                    </form>
+                </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>
+                            <span>Název</span>
+                            <a n:href="default $tablePaginator->getPage(), $tablePaginator->getItemsPerPage(), 'ASC'">
+                                <span n:class="$tablePaginator->getOrderDirection() === 'ACS' ? md-dark">
+                                    <i class="material-icons">arrow_upward</i>
+                                </span>
+                            </a>
+                            <a n:href="default $tablePaginator->getPage(), $tablePaginator->getItemsPerPage(), 'DESC'">
+                                <span n:class="$tablePaginator->getOrderDirection() === 'DESC' ? md-dark">
+                                    <i class="material-icons">arrow_downward</i>
+                                </span>
+                            </a>
+                        </th>
+                        <th>Akce</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <form n:name=massEditBrandForm class=form>
+                        {dump $form->getErrors()}
+                        <tr n:foreach="$brands as $brand">
+                            {var $brandId = $brand->getId()}
+                            <td>{$brandId}</td>
+                            <td>{$brand->getName()}</td>
+                            <td>
+                                <a class="modal-trigger" href="#deleteConfirmModal{$brandId}">Smazat</a>
+                                <a class="modal-trigger" href="#editBrandModal{$brandId}">Editovat</a>
+                            </td>
+
+                            <div id="deleteConfirmModal{$brandId}" class="modal">
+                                <div class="modal-content">
+                                    Opravdu si přeješ smazat firmu {$brand->getName()}?
+                                </div>
+                                <div class="modal-footer">
+                                    <a n:href="delete $brandId"
+                                            class="modal-close waves-effect waves-green btn-flat">Smazat</a>
+                                    <a href="#!" class="modal-close waves-effect waves-green btn-flat">Nemazat</a>
+                                </div>
+                            </div>
+
+                            <div id="editBrandModal{$brandId}" class="modal">
+                                <div class="modal-content">
+                                    <div class="input-field col s6">
+                                        {var $inputId = sprintf('name_%d', $brandId)}
+                                        <input n:name="$inputId" placeholder="Název firmy" type="text" class="validate">
+                                        <label n:name="$inputId">Název firmy</label>
+                                        <span class=error n:ifcontent>{inputError $inputId}</span>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#!" class="modal-close waves-effect waves-green btn-flat">Zavřít</a>
+                                    {var $submitId = sprintf('send_%d', $brandId)}
+                                {input $submitId, class: "waves-effect waves-green btn-flat"}
+                                </div>
+                            </div>
+                        </tr>
+                    </form>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-action" style="text-align: right">
+                <div>
+                    {for $i = 1; $i <= $tablePaginator->getLastPage(); $i++}
+                        <a n:href="default $i, $tablePaginator->getItemsPerPage(), $tablePaginator->getOrderDirection()">
+                            <span n:class="$i === $tablePaginator->getPage() ? underline">{$i}</span>
+                        </a>
+                    {/for}
+                </div>
+                <div>
+                    {for $i = 10; $i <= 30; $i += 10}
+                        {var $currentPageIfItemsPerPageChange = ceil($tablePaginator->getPage() * $tablePaginator->getItemsPerPage() / $i)}
+                        <a n:href="default $currentPageIfItemsPerPageChange, $i, $tablePaginator->getOrderDirection()">
+                            <span n:class="$i === $tablePaginator->getItemsPerPage() ? underline">{$i}</span>
+                        </a>
+                    {/for}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .underline {
+        text-decoration: underline;
+    }
+</style>
