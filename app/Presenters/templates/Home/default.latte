@@ -46,7 +46,6 @@
                     </thead>
                     <tbody>
                     <form n:name=massEditBrandForm class=form>
-                        {dump $form->getErrors()}
                         <tr n:foreach="$brands as $brand">
                             {var $brandId = $brand->getId()}
                             <td>{$brandId}</td>

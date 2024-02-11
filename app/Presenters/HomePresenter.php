@@ -37,16 +37,6 @@ final class HomePresenter extends Presenter
         $this->template->brands = $this->brands = $this->brandService->getBrandsByPaginator($tablePaginator);
     }
 
-    public function actionEdit(int $brandId): void
-    {
-        try {
-            $this->template->brand = $this->brand = $this->brandService->getBrandById($brandId);
-        } catch (BrandNotFoundException) {
-            $this->flashMessage("Firma s id $brandId neexistuje (což je divné, někdo jí musel smazat pod rukama");
-            $this->redirect('default');
-        }
-    }
-
     public function actionDelete(int $brandId): void
     {
         try {
@@ -63,7 +53,6 @@ final class HomePresenter extends Presenter
     {
         $form = $this->brandFormFactory->createNewBrandForm();
         $form->onSuccess[] = function (Form $form): void {
-
             $brand = $this->brandService->processNewBrandForm($form);
 
             $this->flashMessage(sprintf('Firma %s vložena', $brand->getName()));
@@ -77,7 +66,6 @@ final class HomePresenter extends Presenter
     {
         $form = $this->brandFormFactory->createBrandEditForm($this->brands);
         $form->onSuccess[] = function (Form $form): void {
-
             $brand = $this->brandService->processMassEditBrandForm($form);
 
             $this->flashMessage(sprintf('Firma %s aktualizována', $brand->getName()));
